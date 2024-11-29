@@ -1,0 +1,79 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus_rules.yml:/etc/prometheus/prometheus_rules.yml
+    ports:
+      - "9090:9090"
+
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - "9093:9093"
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana  # Attaching a volume to persist data
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Set admin password
+  
+  # jenkins-master:
+  #   image: jenkins/jenkins:lts-jdk17
+  #   ports:
+  #     - "8080:8080"
+  #     - "50000:50000"
+  #   volumes:
+  #     - jenkins_home:/var/jenkins_home
+  #   networks:
+  #     - jenkins-network
+
+  # system1:
+  #   image: jenkins/inbound-agent
+  #   networks:
+  #     - jenkins-network
+  #   depends_on:
+  #     - jenkins-master
+  #   environment:
+  #     - JENKINS_URL =https://jenkins-master:8080/
+  #     - JENKINS_NAME = dummysystem1
+  #     - JENKINS_SECRET = 496de4912489a976f88af510689f6bc3b711fff37ee1b68f78d50b711a339e55
+
+  # system2:
+  #   image: jenkins/jnlp-slave
+  #   networks:
+  #     - jenkins-net
+  #   depends_on:
+  #     - jenkins-master
+
+  # system3:
+  #   image: jenkins/jnlp-slave
+  #   networks:
+  #     - jenkins-net
+  #   depends_on:
+  #     - jenkins-master
+
+volumes:
+  jenkins_home:
+  grafana_data:
+    driver: local 
+
+networks:
+  jenkins-network:
+  # node_exporter:
+  #   image: prom/node-exporter
+  #   ports:
+  #     - "9100:9100"
+  #   volumes:
+  #     - /proc:/host/proc:ro
+  #     - /sys:/host/sys:ro
+  #   command:
+  #     - "--path.procfs=/host/proc"
+  #     - "--path.sysfs=/host/sys"

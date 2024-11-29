@@ -1,0 +1,25 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'instance']
+  group_wait: 1s
+  group_interval: 1s
+  repeat_interval: 3h
+  receiver: 'log_receiver'  # Set a default receiver here
+  # routes:
+  #   - receiver: 'email_alerts'
+
+receivers:
+  - name: 'log_receiver'
+    webhook_configs:
+      - url: 'http://localhost:9093/'  # Replace with your actual endpoint
+
+  # - name: 'email_alerts'
+  #   email_configs:
+  #     - to: 'prakharv.official@gmail.com'  # Replace with your Gmail address
+  #       from: 'prakharv.official@gmail.com'  # Your Gmail address
+  #       smtp_smarthost: 'smtp.gmail.com:587'  # SMTP server for Gmail
+  #       smtp_auth_username: 'prakharv.official@gmail.com'  # Your Gmail address
+  #       smtp_auth_password: 'lmfjuraxryiqsbyv'  # Use App Password
+  #       send_resolved: true
